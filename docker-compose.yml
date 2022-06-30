@@ -18,6 +18,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.allure.rule=Host(`allure.${PRIMARY_DOMAIN}`)"
+      - "traefik.http.services.allure.loadbalancer.server.port=5050"
       - "traefik.http.routers.allure.entrypoints=websecure"
       - "traefik.http.routers.allure.tls=true"
       - "traefik.http.routers.allure.tls.certresolver=le"
@@ -26,7 +27,7 @@ services:
     image: "frankescobar/allure-docker-service-ui"
     restart: always
     environment:
-      ALLURE_DOCKER_PUBLIC_API_URL: http://allure.${PRIMARY_DOMAIN}
+      ALLURE_DOCKER_PUBLIC_API_URL: https://allure.${PRIMARY_DOMAIN}
       ALLURE_DOCKER_PUBLIC_API_URL_PREFIX: ""
     ports:
       - "5252:5252"
