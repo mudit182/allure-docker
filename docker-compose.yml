@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  allure:
+    image: "frankescobar/allure-docker-service"
+    user: 1000:1000
+    restart: always
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: NONE
+      KEEP_HISTORY: 1
+      KEEP_HISTORY_LATEST: 25
+    ports:
+      - "5050:5050"
+    volumes:
+      - ${PWD}/projects:/app/projects
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.allure.rule=Host(`allure.${PRIMARY_DOMAIN}`)"
+      - "traefik.http.routers.allure.entrypoints=websecure"
+      - "traefik.http.routers.allure.tls=true"
+      - "traefik.http.routers.allure.tls.certresolver=le"
+
+  allure-ui:
+    image: "frankescobar/allure-docker-service-ui"
+    restart: always
+    environment:
+      ALLURE_DOCKER_PUBLIC_API_URL: http://allure.${PRIMARY_DOMAIN}
+      ALLURE_DOCKER_PUBLIC_API_URL_PREFIX: ""
+    ports:
+      - "5252:5252"
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.allure-ui.rule=Host(`allure-ui.${PRIMARY_DOMAIN}`)"
+      - "traefik.http.routers.allure-ui.entrypoints=websecure"
+      - "traefik.http.routers.allure-ui.tls=true"
+      - "traefik.http.routers.allure-ui.tls.certresolver=le"
+
+networks:
+  traefik-public:
